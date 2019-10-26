@@ -1,0 +1,136 @@
+<!--
+1. gender filter update and postion
+2. prize Movivation
+-->
+
+<!DOCTYPE>
+<html>
+<style>
+    th {
+        width: 10%;
+    }
+    td {
+        width: 10%;
+    }
+</style>
+<body>
+    <input id="start_year" type=number name="from"/>
+    <input id="end_year" type=number name="to"/>
+    <select>
+        <option value=""></option>
+    </select>
+    <button type="button" onclick="showPrizes()">Submit</button>
+    <p>
+        <input type="radio" name="gender" value="male"> Male<br>
+        <input type="radio" name="gender" value="female"> Female<br>
+        <input type="radio" name="gender" value="all"> All<br>
+    </p>
+<p id="content"></p>
+
+<script>
+    var xmlhttp1 = new XMLHttpRequest();
+    var url1 = "prizesByYear.json";
+    var prizesObj;
+    
+    xmlhttp1.onreadystatechange = function() {
+        if (xmlhttp1.readyState == 4 && xmlhttp1.status == 200) {
+            prizesObj = JSON.parse(xmlhttp1.responseText);
+            displayJSON(prizesObj);
+        }
+    };
+    
+    xmlhttp1.open("GET", url1, true);
+    xmlhttp1.send();
+    
+    var xmlhttp2 = new XMLHttpRequest();
+    var url2 = "winnersByID.json";
+    var winnersObj;
+    
+    xmlhttp2.onreadystatechange = function() {
+        if (xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
+            winnersObj = JSON.parse(xmlhttp2.responseText);
+//            displayJSON(winnersObj);
+        }
+    };
+    
+    xmlhttp2.open("GET", url2, true);
+    xmlhttp2.send();
+    
+    function displayJSON(obj) {
+        yearInfo = "";
+        for (var i = 0; i < obj.prizes.length; i++) {
+            yearInfo += obj.prizes[i].category + "<br>";
+        }
+//        for (var i = 0; i < obj.laureates.length; i++) {
+//            yearInfo += obj.laureates[i].id + "<br>";
+//        }
+//        document.getElementById("content").innerHTML = yearInfo;
+    }
+    
+    function showPrizes() {
+//        alert(prizesObj.prizes.length);
+        var content = "<table border=1><tr><th>Year</th><th>Category</th><th>Motivation</th><th>Laureates</th></tr>"
+        var startYear = document.getElementById("start_year").value;
+        var endYear = document.getElementById("end_year").value;
+        for (var i = 0; i < prizesObj.prizes.length; i++) {
+            prize = prizesObj.prizes[i];
+            if (prize.year > startYear && prize.year < endYear) {
+                content += "<tr><td>" + prize.year + "</td><td>" + prize.category+ "</td><td>" + prize.overallMotivation + "</td><td>";
+            
+                content += "<table>"
+                for (var j = 0; j < prize.laureates.length; j++) {
+                    winner = prize.laureates[j];
+                    content += "<tr><td><a href='javascript:void(0);' onclick='showWinnerInfo(" + winner.id + ")'>" + winner.firstname + " " + winner.surname    + "</td></tr>";
+                }
+                content += "</table></td></tr>";
+            }
+        }
+        content += "</table>"
+        document.getElementById("content").innerHTML = content;
+    }
+    
+    function showWinnerInfo(winnerID) {
+        var winnerInfo;
+        for (var i = 0; i < winnersObj.laureates.length; i++) {
+            if (winnersObj.laureates[i].id == winnerID) {
+                winnerInfo = winnersObj.laureates[i];
+                break;
+            }
+        }
+        var content = "<table border=1><tr><th>Name</th><th>Year of Birth</th><th>Year of Death</th><th>City of Birth</th>";
+        
+        content += "<th><table border=1><tr><th colspan=4>Prizes</th></tr><tr><th>Year</th><th>Category</th><th>Motivation</th>";
+        
+        content += "<th><table border=1><tr><th colspan=3>Affiliations</th></tr><tr><th>Name</th><th>City</th><th>Country</th></tr></table></th>";
+    
+        content += "</tr></table></th>";
+    
+        content += "</tr>";
+//        <th>Prize Category</th><th>Prize Motivation</th><th>Affiliations Name</th><th>Affiliations City</th><th>Affiliations Country</th>
+        content += "<tr><td rowspan>" + winnerInfo.firstname + " " + winnerInfo.surname + "</td>";
+        content += "<td>" + winnerInfo.born + "</td>";
+        content += "<td>" + winnerInfo.died + "</td>";
+        content += "<td>" + winnerInfo.bornCity + "</td>";
+        content += "<td><table border=1>";
+        for (var i = 0; i < winnerInfo.prizes.length; i++) {
+            var prizeInfo = winnerInfo.prizes[i];
+            content += "<tr><td>" + prizeInfo.year + "</td>";
+            content += "<td>" + prizeInfo.category + "</td>";
+            content += "<td>" + prizeInfo.motivation + "</td>";
+            content += "<td><table border=1>";
+            for (var j = 0; i < prizeInfo.affiliations.length; i++) {
+                var affiliationInfo = prizeInfo.affiliations[j];
+                content += "<tr><td>" + affiliationInfo.name + "</td>";
+                content += "<td>" + affiliationInfo.city + "</td>";
+                content += "<td>" + affiliationInfo.country + "</td>";
+            }
+            content += "</table></td></tr>";
+        }
+        content += "</table></td></tr></table>";
+        winnerInfoWin = window.open("", "MsgWindow", "width=400,height=300");
+        winnerInfoWin.document.write(content);
+    }
+</script>    
+
+</body>
+</html>
