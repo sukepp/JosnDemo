@@ -7,12 +7,44 @@
 <!DOCTYPE>
 <html>
 <style>
-    th {
-        width: 10%;
+/*
+    span {
+        padding: 30px;
     }
-    td {
-        width: 10%;
+*/  
+    .row {
+        border: 1px solid black;
+        height: 100px;
     }
+    
+    div .item {
+        width: 10%;
+/*        height: 50%;*/
+/*        text-align: center;*/
+        display: inline-block;
+        border: 1px solid black;
+        vertical-align: middle;
+    }
+    
+    div .winner {
+        height: 100%;
+        border: 1px solid black;
+/*        vertical-align: middle;*/
+/*        text-align: center;*/
+        width: 25%;
+        display: inline-block;
+    }
+    
+    div .info {
+        width: 40%;
+        display: inline-block;
+        height: 100%;
+    }
+    
+    ul {
+        display: inline-block;
+    }
+    
 </style>
 <body>
     <input id="start_year" type=number name="from"/>
@@ -70,7 +102,7 @@
     }
     
     function showPrizes() {
-        var content = "<table border=1><tr><th>Year</th><th>Category</th><th>Motivation</th><th>Laureates</th></tr>";
+        var content = "<div class='row'><div class='item'>Year</div><div class='item'>Category</div><div class='item'>Motivation</div><div class='winner'>Laureates</div></div><br><br>";
         var startYear = document.getElementById("start_year").value;
         var endYear = document.getElementById("end_year").value;
         var category = document.getElementById("category").value;
@@ -79,17 +111,16 @@
             var prize = prizesObj.prizes[i];
             if (parseInt(prize.year) > parseInt(startYear) && parseInt(prize.year) < parseInt(endYear) && prize.category.match(category)) {
                 prizesGenderList.push(prize);
-                content += "<tr><td>" + prize.year + "</td><td>" + prize.category+ "</td><td>" + prize.overallMotivation + "</td><td>";
-            
-                content += "<table>"
+                content += "<div class='row'><div class='item'>" + prize.year + "</div><div class='item'>" + prize.category+ "</div><div class='item'>" + prize.overallMotivation + "</div><div class='winner'><ul>";
                 for (var j = 0; j < prize.laureates.length; j++) {
                     winner = prize.laureates[j];
-                    content += "<tr><td><a href='javascript:void(0);' onclick='showWinnerInfo(" + winner.id + ")'>" + winner.firstname + " " + winner.surname    + "</td></tr>";
+                    content += "<li>" + winner.firstname + " " + winner.surname;
+                    content += "<button onclick='showWinnerInfo(" + winner.id + ", " + i + ")'>more info</button></li>";
                 }
-                content += "</table></td></tr>";
+                content += "<ul></div><div class='info' id=" + i + " style='display:none;'></div></div>";
             }
         }
-        content += "</table>";
+        
         document.getElementById("content").innerHTML = content;
         document.getElementById("gender_all").checked = true;
     }
@@ -121,7 +152,8 @@
         document.getElementById("content").innerHTML = content;
     }
     
-    function showWinnerInfo(winnerID) {
+    function showWinnerInfo(winnerID, prizeID) {
+        var infoLoc = document.getElementById("" + prizeID);
         var winnerInfo;
         for (var i = 0; i < winnersObj.laureates.length; i++) {
             if (winnersObj.laureates[i].id == winnerID) {
@@ -130,15 +162,15 @@
             }
         }
         var content = "<table border=1>";
-        
+
         // Table header
         content += "<tr><th rowspan=3>Name</th><th rowspan=3>Year of Birth</th><th rowspan=3>Year of Death</th><th rowspan=3>City of Birth</th><th colspan=6>Prizes</th></tr>";
-        
+
         content += "<tr><th rowspan=2>Year</th><th rowspan=2>Category</th><th rowspan=2>Motivation</th><th colspan=3>Affiliations</th></tr>";
-        
+
         content += "<tr><th>Name</th><th>City</th><th>Country</th></tr>";
-        
-        
+
+
         // Table body
         // First row of table body
         var rowspanTotal = 0;
@@ -170,7 +202,7 @@
             content += "<td>" + affiliationInfo.city + "</td>";
             content += "<td>" + affiliationInfo.country + "</td></tr>";
         }        
-        
+
         // Rest rows of table body
         for (var i = 1; i < winnerInfo.prizes.length; i++) {
             prizeInfo = winnerInfo.prizes[i];
@@ -193,8 +225,8 @@
             }
         }
         content += "</table>";
-        winnerInfoWin = window.open("", "MsgWindow", "width=400,height=300");
-        winnerInfoWin.document.write(content);
+        infoLoc.style.display = "block";
+        infoLoc.innerHTML = content;
     }
 </script>    
 
