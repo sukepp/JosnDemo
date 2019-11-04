@@ -19,10 +19,15 @@
     }
     
     div .item {
-        width: 8%;
+/*        text-align: center;*/
+        width: 10%;
 /*        display: inline-block;*/
         border: 1px solid black;
-/*        vertical-align: top;*/
+/*        vertical-align: middle;*/
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: antiquewhite;
     }
     
     div .winner {
@@ -32,6 +37,12 @@
 /*        text-align: center;*/
         width: 20%;
 /*        display: inline-block;*/
+/*
+        display: flex;
+        align-items: center;
+        justify-content: center;
+*/
+        background-color: antiquewhite;
     }
     
     div .info {
@@ -40,23 +51,76 @@
 /*        display: flex;*/
         height: 100%;
         border: none;
+/*
+        display: flex;
+        align-items: center;
+        justify-content: center;
+*/
+        
+    }
+    
+    div .title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color:burlywood;
+        font-weight: 900;
     }
     
     ul {
         display: inline-block;
     }
     
+    table {
+        background-color:antiquewhite;
+    }
+    
+    th {
+        background-color:burlywood;
+    }
+    
+    input, select, button {
+        margin-top: 10px;
+        margin-left: 10px;
+        margin-right: 20px;
+        margin-bottom: 5px;
+    }
+    
+    .filterInfo {
+        margin-bottom: 20px;
+    }
+    
+    .filterBlock {
+        background-color: burlywood;
+        padding: 20px;
+        border: 1px solid black;
+        font-weight: 900;
+    }
 </style>
 <body>
-    <input id="start_year" type=number name="from"/>
-    <input id="end_year" type=number name="to"/>
-    <select id="category"></select>
-    <button type="button" onclick="showPrizes()">Submit</button><br>
-    <form onchange="filterGender()">
-        <input id="gender_male" type="radio" name="gender" value="male" > Male<br>
-        <input id="gender_female" type="radio" name="gender" value="female"> Female<br>
-        <input id="gender_all" type="radio" name="gender" value="all" checked> All<br>
-    </form>
+    <div class="filterBlock">
+        <div class="filterInfo">
+            <span>Start Year:</span>
+            <input id="start_year" type=number name="from"/>
+            <span>End Year:</span>
+            <input id="end_year" type=number name="to"/>
+            <span>Category:</span>
+            <select id="category"></select>
+            <button type="button" onclick="showPrizes()">Submit</button><br>
+        </div>
+        <div class="filterInfo" style="display: flex">
+            <div>
+                <span>Gender:</span>
+            </div>
+            <div>
+                <form onchange="filterGender()">
+                    <input id="gender_male" type="radio" name="gender" value="male" > Male<br>
+                    <input id="gender_female" type="radio" name="gender" value="female"> Female<br>
+                    <input id="gender_all" type="radio" name="gender" value="all" checked> All<br>
+                </form>
+            </div>
+        </div>
+    </div>
     <p id="content"></p>
 
 <script>
@@ -114,54 +178,59 @@
     }
     
     function showPrizes() {
-        var content = "<div class='row'><div class='item'>Year</div><div class='item'>Category</div><div class='item'>Motivation</div><div class='winner'>Laureates</div></div><br><br>";
+        document.getElementById("content").innerHTML = "";
+        var content = "<div class='row'><div class='item title'>Year</div><div class='item title'>Category</div><div class='item title'>Motivation</div><div class='winner title'>Laureates</div></div>";
         var startYear = document.getElementById("start_year").value;
         var endYear = document.getElementById("end_year").value;
-        var category = document.getElementById("category").value;
-        prizesGenderList = [];
-        for (var i = 0; i < prizesObj.prizes.length; i++) {
-            var prize = prizesObj.prizes[i];
-            if (parseInt(prize.year) > parseInt(startYear) && parseInt(prize.year) < parseInt(endYear) && prize.category.match(category)) {
-                prizesGenderList.push(prize);
-                content += "<div class='row'><div class='item'>" + prize.year + "</div><div class='item'>" + prize.category+ "</div><div class='item'>" + prize.overallMotivation + "</div><div class='winner'><ul>";
-                for (var j = 0; j < prize.laureates.length; j++) {
-                    winner = prize.laureates[j];
-                    content += "<li>" + winner.firstname + " " + winner.surname;
-                    content += "<button onclick='showWinnerInfo(" + winner.id + ", " + i + ")'>more info</button></li>";
+        if (startYear <= endYear) {
+            var category = document.getElementById("category").value;
+            prizesGenderList = [];
+            for (var i = 0; i < prizesObj.prizes.length; i++) {
+                var prize = prizesObj.prizes[i];
+                if (parseInt(prize.year) > parseInt(startYear) && parseInt(prize.year) < parseInt(endYear) && prize.category.match(category)) {
+                    prizesGenderList.push(prize);
+                    content += "<div class='row'><div class='item'>" + prize.year + "</div><div class='item'>" + prize.category+ "</div><div class='item'>" + prize.overallMotivation + "</div><div class='winner'><ul>";
+                    for (var j = 0; j < prize.laureates.length; j++) {
+                        winner = prize.laureates[j];
+                        content += "<li><a href='javascript:void(0)' onclick='showWinnerInfo(" + winner.id + ", " + i + ")'>" + winner.firstname + " " + winner.surname + "</a></li>";
+                    }
+                    content += "</ul></div><div class='info' id=" + i + " style='display:none;'></div></div>";
                 }
-                content += "<ul></div><div class='info' id=" + i + " style='display:none;'></div></div>";
             }
+
+            document.getElementById("content").innerHTML = content;
+            document.getElementById("gender_all").checked = true;
+        } else {
+            alert("Sorry, the end year should be greater than the start year.");
+            document.getElementById("end_year").value = "";
         }
-        
-        document.getElementById("content").innerHTML = content;
-        document.getElementById("gender_all").checked = true;
     }
     
     function filterGender() {
-        var content = "<table border=1><tr><th>Year</th><th>Category</th><th>Motivation</th><th>Laureates</th></tr>";
-        for (var i = 0; i < prizesGenderList.length; i++) {
-            prize = prizesGenderList[i];
-            content += "<tr><td>" + prize.year + "</td><td>" + prize.category+ "</td><td>" + prize.overallMotivation + "</td><td>";
-
-            content += "<table>"
-            for (var j = 0; j < prize.laureates.length; j++) {
-                winner = prize.laureates[j];
-                var targetGender = "male";
-                if (document.getElementById("gender_female").checked == true) {
-                    targetGender = "female";
-                } else if (document.getElementById("gender_all").checked == true) {
-                    targetGender = "all";
+        if (prizesGenderList.length == 0) {
+            alert("Please input the range of years.");
+            document.getElementById("gender_all").checked = true;
+        } else {
+            var content = "<div class='row'><div class='item title'>Year</div><div class='item title'>Category</div><div class='item title'>Motivation</div><div class='winner title'>Laureates</div></div>";
+            for (var i = 0; i < prizesGenderList.length; i++) {
+                prize = prizesGenderList[i];
+                content += "<div class='row'><div class='item'>" + prize.year + "</div><div class='item'>" + prize.category+ "</div><div class='item'>" + prize.overallMotivation + "</div><div class='winner'><ul>";
+                for (var j = 0; j < prize.laureates.length; j++) {
+                    winner = prize.laureates[j];
+                    var targetGender = "male";
+                    if (document.getElementById("gender_female").checked == true) {
+                        targetGender = "female";
+                    } else if (document.getElementById("gender_all").checked == true) {
+                        targetGender = "all";
+                    }
+                    if (targetGender == "all" || winnerGenderMap[winner.id] == targetGender) {
+                        content += "<li><a href='javascript:void(0)' onclick='showWinnerInfo(" + winner.id + ", " + i + ")'>" + winner.firstname + " " + winner.surname + "</a></li>";
+                    }
                 }
-                if (targetGender == "all") {
-                    content += "<tr><td><a href='javascript:void(0);' onclick='showWinnerInfo(" + winner.id + ")'>" + winner.firstname + " " + winner.surname    + "</td></tr>";
-                } else if (winnerGenderMap[winner.id] == targetGender) {
-                    content += "<tr><td><a href='javascript:void(0);' onclick='showWinnerInfo(" + winner.id + ")'>" + winner.firstname + " " + winner.surname    + "</td></tr>";
-                }
+                content += "</ul></div><div class='info' id=" + i + " style='display:none;'></div></div>";
             }
-            content += "</table></td></tr>";
+            document.getElementById("content").innerHTML = content;
         }
-        content += "</table>";
-        document.getElementById("content").innerHTML = content;
     }
     
     var lastPrizeID;
