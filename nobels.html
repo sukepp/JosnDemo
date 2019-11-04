@@ -13,17 +13,16 @@
     }
 */  
     .row {
-        border: 1px solid black;
+        display: flex;
+/*        border: 1px solid black;*/
         height: 100px;
     }
     
     div .item {
-        width: 10%;
-/*        height: 50%;*/
-/*        text-align: center;*/
-        display: inline-block;
+        width: 8%;
+/*        display: inline-block;*/
         border: 1px solid black;
-        vertical-align: top;
+/*        vertical-align: top;*/
     }
     
     div .winner {
@@ -31,14 +30,16 @@
         border: 1px solid black;
 /*        vertical-align: middle;*/
 /*        text-align: center;*/
-        width: 25%;
-        display: inline-block;
+        width: 20%;
+/*        display: inline-block;*/
     }
     
     div .info {
         width: 40%;
-        display: inline-block;
+/*        display: inline-block;*/
+/*        display: flex;*/
         height: 100%;
+        border: none;
     }
     
     ul {
@@ -163,8 +164,10 @@
         document.getElementById("content").innerHTML = content;
     }
     
+    var lastPrizeID;
     function showWinnerInfo(winnerID, prizeID) {
         var infoLoc = document.getElementById("" + prizeID);
+        var lastInfoLoc = document.getElementById("" + lastPrizeID);
         var winnerInfo;
         for (var i = 0; i < winnersObj.laureates.length; i++) {
             if (winnersObj.laureates[i].id == winnerID) {
@@ -236,7 +239,11 @@
             }
         }
         content += "</table>";
+        if (lastInfoLoc != null) {
+            lastInfoLoc.style.display = "none";
+        }
         infoLoc.style.display = "block";
+        lastPrizeID = prizeID;
         infoLoc.innerHTML = content;
     }
 </script>    
