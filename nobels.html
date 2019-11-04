@@ -7,56 +7,32 @@
 <!DOCTYPE>
 <html>
 <style>
-/*
-    span {
-        padding: 30px;
-    }
-*/  
     .row {
         display: flex;
-/*        border: 1px solid black;*/
         height: 100px;
     }
     
     div .item {
-/*        text-align: center;*/
-        width: 10%;
-/*        display: inline-block;*/
+        width: 12%;
         border: 1px solid black;
-/*        vertical-align: middle;*/
         display: flex;
         align-items: center;
         justify-content: center;
         background-color: antiquewhite;
+        padding: 8px;
     }
     
     div .winner {
         height: 100%;
         border: 1px solid black;
-/*        vertical-align: middle;*/
-/*        text-align: center;*/
-        width: 20%;
-/*        display: inline-block;*/
-/*
-        display: flex;
-        align-items: center;
-        justify-content: center;
-*/
+        width: 15%;
         background-color: antiquewhite;
     }
     
     div .info {
         width: 40%;
-/*        display: inline-block;*/
-/*        display: flex;*/
         height: 100%;
         border: none;
-/*
-        display: flex;
-        align-items: center;
-        justify-content: center;
-*/
-        
     }
     
     div .title {
@@ -84,15 +60,17 @@
         margin-left: 10px;
         margin-right: 20px;
         margin-bottom: 5px;
+        border: 1px solid black;
     }
     
     .filterInfo {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
     
     .filterBlock {
         background-color: burlywood;
-        padding: 20px;
+        padding-left: 30px;
+        padding-top: 20px;
         border: 1px solid black;
         font-weight: 900;
     }
@@ -189,7 +167,7 @@
                 var prize = prizesObj.prizes[i];
                 if (parseInt(prize.year) > parseInt(startYear) && parseInt(prize.year) < parseInt(endYear) && prize.category.match(category)) {
                     prizesGenderList.push(prize);
-                    content += "<div class='row'><div class='item'>" + prize.year + "</div><div class='item'>" + prize.category+ "</div><div class='item'>" + prize.overallMotivation + "</div><div class='winner'><ul>";
+                    content += "<div class='row'><div class='item'>" + prize.year + "</div><div class='item'>" + prize.category+ "</div><div class='item'><p>" + prize.overallMotivation + "</p></div><div class='winner'><ul>";
                     for (var j = 0; j < prize.laureates.length; j++) {
                         winner = prize.laureates[j];
                         content += "<li><a href='javascript:void(0)' onclick='showWinnerInfo(" + winner.id + ", " + i + ")'>" + winner.firstname + " " + winner.surname + "</a></li>";
