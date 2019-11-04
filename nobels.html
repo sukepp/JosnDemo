@@ -49,14 +49,7 @@
 <body>
     <input id="start_year" type=number name="from"/>
     <input id="end_year" type=number name="to"/>
-    <select id="category">
-        <option value="">all</option>
-        <option value="physics">physics</option>
-        <option value="chemistry">chemistry</option>
-        <option value="medicine">medicine</option>
-        <option value="peace">peace</option>
-        <option value="economics">economics</option>
-    </select>
+    <select id="category"></select>
     <button type="button" onclick="showPrizes()">Submit</button><br>
     <form onchange="filterGender()">
         <input id="gender_male" type="radio" name="gender" value="male" > Male<br>
@@ -74,6 +67,7 @@
     xmlhttp1.onreadystatechange = function() {
         if (xmlhttp1.readyState == 4 && xmlhttp1.status == 200) {
             prizesObj = JSON.parse(xmlhttp1.responseText);
+            showCategory();
         }
     };
     
@@ -98,6 +92,20 @@
     function createWinnerGenderMap() {
         for (var i = 0; i < winnersObj.laureates.length; i++) {
             winnerGenderMap[winnersObj.laureates[i].id] = winnersObj.laureates[i].gender;
+        }
+    }
+    
+    function showCategory() {
+        var categoryList = {};
+        for (var i = 0; i < prizesObj.prizes.length; i++) {
+            var prize = prizesObj.prizes[i];
+            if (!(prize.category in categoryList)) {
+                categoryList[prize.category] = 1;
+            }
+        }
+        for (var elem in categoryList) {
+            var categotySelect = document.getElementById("category");
+            categotySelect.options.add(new Option(elem, elem));
         }
     }
     
